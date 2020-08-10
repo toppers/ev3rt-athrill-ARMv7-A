@@ -26,7 +26,7 @@ INCLUDES := $(INCLUDES) -I$(TARGETDIR)
 COPTS := $(COPTS) -mlittle-endian 
 #LDFLAGS := $(LDFLAGS) -mlittle-endian -nostartfiles --specs=nano.specs -e start
 LDFLAGS := $(LDFLAGS) -mlittle-endian -nostartfiles --specs=nano.specs -e start
-LDFLAGS += -L /usr/lib/arm-none-eabi/newlib/fpu/
+#LDFLAGS += -L /usr/lib/arm-none-eabi/newlib/fpu/
 CDEFS := $(CDEFS) -DTOPPERS_RZA1H
 CFG1_OUT_LDFLAGS := -nostdlib $(CFG1_OUT_LDFLAGS)
 

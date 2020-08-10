@@ -82,7 +82,8 @@ extern "C" {
 /*
  *  微少時間待ち
  */
-extern void	sil_dly_nse(ulong_t dlytim) throw();
+//extern void	sil_dly_nse(ulong_t dlytim) throw();
+extern void	sil_dly_nse(ulong_t dlytim);
 
 /*
  *  エンディアンの反転

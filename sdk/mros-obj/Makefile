@@ -53,14 +53,15 @@ TARGET = gr_peach_gcc
 #
 #  プログラミング言語の定義
 #
-SRCLANG = c
+SRCLANG = c++
 ifeq ($(SRCLANG),c)
 	LIBS = 
 endif
 ifeq ($(SRCLANG),c++)
   USE_CXX = true
-  CXXLIBS = -lstdc++ -lm -lc
-  CXXRTS = cxxrt.o newlibrt.o
+  CXXLIBS =  -lgcc -lstdc++ -lsupc++ -lm -lc -lc -lgcc -lnosys
+  #CXXLIBS = -lstdc++ -lsupc++ -lm 
+  #CXXRTS = cxxrt.o newlibrt.o
 endif
 
 #
@@ -151,6 +152,7 @@ LIBS := $(LIBS) $(CXXLIBS)
 CFLAGS = $(COPTS) $(CDEFS) $(INCLUDES)
 
 include ./Makefile.mbed
+include ./Makefile.mros
 
 #
 #  アプリケーションプログラムに関する定義
@@ -175,12 +177,16 @@ APPLDIRS += ../../target/$(TARGET)/athrill
 APPLDIRS += ../../../athrill/apl/include
 APPLDIRS += ../../../athrill/apl/src
 APPLDIRS += $(MBED_DIRS)
+APPLDIRS += $(MROS_DIRS)
 
 APPL_CFG = app.cfg
 CDEFS += -DTOPPERS_SUPPORT_PROTECT
 APPL_LIBS =  -nostartfiles  
 
 APPL_DIR = $(APPLDIRS) $(SRCDIR)/library
+
+APPL_CXXDIR := $(MROS_CXXDIRS)
+
 APPL_ASMOBJS =
 ifdef USE_CXX
 	APPL_CXXOBJS := app.o
@@ -199,10 +205,16 @@ APPL_COBJS += gpio_dri.o
 APPL_COBJS += athrill-libgcc.o
 APPL_COBJS += athrill-syscall.o
 APPL_COBJS += $(MBED_COBJS)
+APPL_COBJS += $(MROS_COBJS)
 APPL_CXXOBJS += $(MBED_CXXOBJS)
+APPL_CXXOBJS += $(MROS_CXXOBJS)
 
 APPL_CFLAGS := $(APPL_CFLAGS)
 APPL_CFLAGS += $(MBED_CFLAGS)
+APPL_CFLAGS += $(MROS_CFLAGS)
+
+CXXFLAGS := $(MROS_CXXFLAGS)
+
 ifdef APPLDIRS
 	INCLUDES := $(INCLUDES) $(foreach dir,$(APPLDIRS),-I$(dir))
 endif
@@ -281,6 +293,7 @@ endif
 #  ソースファイルのあるディレクトリに関する定義
 #
 vpath %.c $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
+vpath %.cpp $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR) $(APPL_CXXDIR)
 vpath %.S $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
 vpath %.cfg $(APPL_DIR)
 
@@ -542,7 +555,7 @@ $(APPL_COBJS:.o=.s): %.s: %.c
 	$(CC) -S $(CFLAGS) $(APPL_CFLAGS) $<
 
 $(APPL_CXXOBJS): %.o: %.cpp
-	$(CXX) -c $(CFLAGS) $(APPL_CFLAGS) $<
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(APPL_CFLAGS) $<
 
 $(APPL_CXXOBJS:.o=.s): %.s: %.cpp
 	$(CXX) -S $(CFLAGS) $(APPL_CFLAGS) $<
@@ -598,7 +611,7 @@ $(APPL_ASMOBJS:.o=.d): %.d: %.S
 
 %.o: %.cpp
 	@echo "*** Default compile rules should not be used."
-	$(CXX) -c $(CFLAGS) $<
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $<
 
 %.s: %.cpp
 	@echo "*** Default compile rules should not be used."

@@ -333,7 +333,10 @@ void __register_exitproc(void)
 {
 
 }
+void __sync_synchronize(void)
+{
 
+}
 
 // Special FD Handling
 // (to convert one fd to in or out for bluetooth )

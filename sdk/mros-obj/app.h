@@ -77,8 +77,14 @@
  */
 #ifndef TOPPERS_MACRO_ONLY
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern void	task(intptr_t exinf);
 extern void	main_task(intptr_t exinf);
+extern void	usr_task1(intptr_t exinf);
+extern void	usr_task2(intptr_t exinf);
 extern void balance_task(intptr_t exinf);
 extern void idle_task(intptr_t exinf);
 //extern void	tex_routine(TEXPTN texptn, intptr_t exinf);
@@ -99,4 +105,9 @@ extern void	gpio_irq_dispatcher(intptr_t exinf);
 //extern void	ev3_uart_port2_irq(void);
 //
 //extern void initialize_ev3(intptr_t exinf);
+#ifdef __cplusplus
+}
+#endif
+
+
 #endif /* TOPPERS_MACRO_ONLY */
