@@ -68,7 +68,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#include "t_stddef.h"
 /*
  *  ログ情報の種別の定義
  */

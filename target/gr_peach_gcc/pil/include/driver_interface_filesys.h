@@ -4,7 +4,7 @@
 
 #pragma once
 #include <driver_svc.h>
-
+//#include "syssvc/serial.h"
 /**
  * File information structure following definitions of FILINFO in FatFS.
  */
@@ -56,7 +56,9 @@ ER _filesys_closedir(ID dirid);
 /**
  * Extended service call wrappers which can be used to implement APIs
  */
+#define EV3_ATHRILL
 
+#ifndef EV3_ATHRILL
 static inline ER filesys_opendir(const char *path) {
 	ER_UINT ercd = cal_svc(TFN_FILESYS_OPENDIR, (intptr_t)path, 0, 0, 0, 0);
 	assert(ercd != E_NOMEM);
@@ -74,6 +76,22 @@ static inline ER filesys_closedir(ID dirid) {
 	assert(ercd != E_NOMEM);
 	return ercd;
 }
+#else
+// defined in athrill-libgcc.c
+extern ER filesys_opendir(const char *path);
+extern ER filesys_readdir(ID dirid, fatfs_filinfo_t *p_fileinfo);
+extern ER filesys_closedir(ID dirid);
+
+// this enum is to be same as serial_port_t in ev3api_fs.h
+typedef enum { 
+    SYS_EV3_SERIAL_DEFAULT = 0, //!< \~English Default SIO port     \~Japanese デフォルトのシリアルポート（ログタスク用ポート）
+    SYS_EV3_SERIAL_UART = 1,	//!< \~English UART (Sensor port 1) \~Japanese UARTポート（センサポート1）
+    SYS_EV3_SERIAL_BT = 2,	    //!< \~English Bluetooth SPP        \~Japanese Bluetooth仮想シリアルポート
+} sys_serial_port_t;
+
+extern ER filesys_serial_open(sys_serial_port_t port);
+
+#endif
 
 /**
  * Extended Service Call Stubs

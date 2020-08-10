@@ -171,10 +171,10 @@ APPLDIRS += ../../target/$(TARGET)/drivers/common/include
 APPLDIRS += ../../target/$(TARGET)/TLSF-2.4.6/include ../../target/$(TARGET)/TLSF-2.4.6/src
 APPLDIRS += ../../target/$(TARGET)/athrill
 APPLDIRS += ../../../athrill/apl/include
+APPLDIRS += ../../../athrill/apl/src
 APPL_CFG = app.cfg
 CDEFS += -DTOPPERS_SUPPORT_PROTECT
 APPL_LIBS =  -nostartfiles  
-
 
 APPL_DIR = $(APPLDIRS) $(SRCDIR)/library
 APPL_ASMOBJS =
@@ -192,6 +192,8 @@ APPL_COBJS += brick_dri.o
 APPL_COBJS += uart_dri.o
 APPL_COBJS += motor_dri.o
 APPL_COBJS += gpio_dri.o
+APPL_COBJS += athrill-libgcc.o
+APPL_COBJS += athrill-syscall.o
 
 APPL_CFLAGS := $(APPL_CFLAGS)
 ifdef APPLDIRS

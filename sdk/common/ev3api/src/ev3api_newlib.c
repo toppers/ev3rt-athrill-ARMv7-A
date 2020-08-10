@@ -139,13 +139,15 @@ int _kill(int pid, int sig) {
     errno = EINVAL;
     return -1;
 }
-
+#if 0
 void _exit(int status) {
     assert(false);
     ext_ker();
     while(1);
 }
+#endif
 
+#if 0 // For athrill. these are defined in target/v850_gcc/athrill/athrill-libgcc.c 
 int _open_r(struct _reent *ptr, const char *file, int flags, int mode) {
     return cal_svc(TFN_NEWLIB_OPEN_R, (intptr_t)ptr, (intptr_t)file, (intptr_t)flags, (intptr_t)mode, 0);
 }
@@ -166,6 +168,7 @@ off_t _lseek_r(struct _reent *ptr, int fd, off_t pos, int whence) {
 	return cal_svc(TFN_NEWLIB_LSEEK_R, (intptr_t)ptr, (intptr_t)fd, (intptr_t)pos, (intptr_t)whence, 0);
 }
 
+#endif
 
 /**
  * Override the default allocator in newlib
@@ -220,6 +223,14 @@ void *_realloc_r(void *reent, void *aptr, size_t nbytes) {
 //	return realloc_ex(aptr, nbytes, heap_for_domain(TDOM_SELF));
 }
 
+// TODO: for avoidng final link error
+void __dtors(void)
+{
+
+}
+
+void __dtors_end(void) {
+}
 
 //caddr_t _sbrk(int nbytes) {
 //	API_ERROR("This function should NEVER be called!");

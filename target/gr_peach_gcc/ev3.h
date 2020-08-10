@@ -101,6 +101,6 @@ extern void svc_perror(const char *file, int_t line, const char *expr, ER ercd);
 extern void pru_suart_isr(intptr_t portline);
 #endif
 
-//#define TCNT_SYSLOG_BUFFER (1024)
+#define TCNT_SYSLOG_BUFFER (1024)
 
 #endif /* TOPPERS_EV3_H */

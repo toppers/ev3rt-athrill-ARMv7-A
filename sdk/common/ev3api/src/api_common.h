@@ -4,7 +4,7 @@
  *  Created on: Mar 29, 2014
  *      Author: liyixiao
  */
-#include <t_stddef.h>
+
 #include <t_syslog.h>
 #include "platform_interface_layer.h"
 

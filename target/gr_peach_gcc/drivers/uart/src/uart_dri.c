@@ -5,7 +5,7 @@
 
 void uart_dri_get_data_ultrasonic(uint8_t mode, void *dest, SIZE size)
 {
-	uint16_t data;
+	uint32_t data;
 	const uint32_t *addr;
 	switch (mode) {
 	case 0:
@@ -18,7 +18,17 @@ void uart_dri_get_data_ultrasonic(uint8_t mode, void *dest, SIZE size)
 		return;
 	}
 	data = sil_rew_mem(addr);
-	memcpy(dest, (void*)&data, sizeof(data));
+
+	switch (mode) {
+	case 0:
+		// get_distance uses int16_t
+		*(int16_t*)dest = (int16_t)data;
+		break;
+	case 2:
+		*(bool_t*)dest = (bool_t)(!(data == 0));
+		break;
+	}
+	//memcpy(dest, (void*)&data, sizeof(data));
 	return;
 }
 void uart_dri_get_data_gyro(uint8_t mode, void *dest, SIZE size)
@@ -32,6 +42,13 @@ void uart_dri_get_data_gyro(uint8_t mode, void *dest, SIZE size)
 	case 1:
 		addr = (const uint32_t *)EV3_SENSOR_ADDR_RATE;
 		break;
+	case 4:
+	    {
+			// Gyro Reset sends reset (write command)
+			uint32_t *waddr = (uint32_t *)EV3_GYRO_ADDR_RESET;
+			sil_wrw_mem(waddr,1);
+			return;
+		}
 	default:
 		return;
 	}
@@ -39,10 +56,17 @@ void uart_dri_get_data_gyro(uint8_t mode, void *dest, SIZE size)
 	memcpy(dest, (void*)&data, sizeof(data));
 	return;
 }
-void uart_dri_get_data_touch(uint8_t mode, void *dest, SIZE size)
+void uart_dri_get_data_touch(uint8_t index, uint8_t mode, void *dest, SIZE size)
 {
 	uint16_t data ;
-	const uint32_t *addr = (const uint32_t *)EV3_SENSOR_ADDR_TOUCH;;
+	uint32_t *addr;
+
+	if (index == 0) {
+		addr = (uint32_t *)EV3_SENSOR_ADDR_TOUCH_0;
+	}
+	else {
+		addr = (uint32_t *)EV3_SENSOR_ADDR_TOUCH_1;
+	}
 	data = (uint16_t)sil_rew_mem(addr);
 	memcpy(dest, (void*)&data, sizeof(data));
 	return;
@@ -64,8 +88,9 @@ void uart_dri_get_data_color(uint8_t mode, void *dest, SIZE size)
 	}
 	else if (dri_mode == DRI_COL_AMBIENT) {
 		*data8 = (uint8_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_AMBIENT);
-	}
-	else {
+	} else if ( dri_mode == DRI_COL_COLOR ) {
+		*data8 = (uint8_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_COLOR);
+	} else {
 		array[0] = (uint16_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_RGB_R);
 		array[1] = (uint16_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_RGB_G);
 		array[2] = (uint16_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_RGB_B);
@@ -113,4 +138,16 @@ void uart_dri_get_data_temp(uint8_t mode, void *dest, SIZE size)
 	int16_t *array = (int16_t*)dest;
 	array[0] = (uint16_t)sil_rew_mem((const uint32_t *)EV3_SENSOR_ADDR_TMP);
 	return;
+}
+
+void uart_dri_get_data_battery(uint8_t mode, void *dest, SIZE size)
+{
+	// mode 0 : current / mode 1: voltage
+	int32_t *p = (int32_t*)dest;
+	int32_t data;
+	const uint32_t *addr = ((mode == 0 ) ? (const uint32_t *)EV3_BATTERY_ADDR_CURRENT:  (const uint32_t *)EV3_BATTERY_ADDR_VOLTAGE);
+	data = (uint32_t)sil_rew_mem(addr);
+	*p = data;
+	return;
+
 }

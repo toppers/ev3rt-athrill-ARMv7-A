@@ -58,6 +58,7 @@ void gpio_set_value(uint32_t pin, bool_t value) {
 }
 void gpio_out_flush(void)
 {
+	//disable_int_all();
 	x_lock_cpu();
 	sil_wrb_mem((void*)VDEV_TX_FLAG_BASE, 1);
 
@@ -75,6 +76,10 @@ void gpio_out_flush(void)
 	if (sil_rew_mem((uint32_t*)EV3_MOTOR_ADDR_INX(EV3_MOTOR_INX_RESET_ANGLE_D)) != 0) {
 		sil_wrw_mem((uint32_t*)EV3_MOTOR_ADDR_INX(EV3_MOTOR_INX_RESET_ANGLE_D), 0U);
 	}
+	if (sil_rew_mem((uint32_t *)EV3_GYRO_ADDR_RESET) != 0 ) {
+		sil_wrw_mem( (uint32_t *)EV3_GYRO_ADDR_RESET, 0U);
+	}
 #endif
 	x_unlock_cpu();
+	//enable_int_all();
 }

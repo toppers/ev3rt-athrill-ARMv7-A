@@ -63,6 +63,22 @@ SECTIONS
     { 
        *(.rodata*) 
        . = ALIGN(4);
+	    __init_array_start = .;
+	    KEEP (*(SORT(.init_array.*)))
+	    KEEP (*(.init_array))
+	    __init_array_end = .;
+
+	    . = ALIGN(4);
+	    KEEP(*(.fini))
+	
+	    . = ALIGN(4);
+	    __fini_array_start = .;
+	    KEEP (*(.fini_array))
+	    KEEP (*(SORT(.fini_array.*)))
+	    __fini_array_end = .;
+
+
+	    
        __rodata_end = . ;
     } >FLASH
     __rom_size = . + SIZEOF(.data) - __text;
