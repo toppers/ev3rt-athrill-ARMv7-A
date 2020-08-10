@@ -149,13 +149,14 @@ LDFLAGS := $(LDFLAGS)
 CFG1_OUT_LDFLAGS := $(CFG1_OUT_LDFLAGS) 
 LIBS := $(LIBS) $(CXXLIBS)
 CFLAGS = $(COPTS) $(CDEFS) $(INCLUDES)
-CXXFLAGS := $(CFLAGS) $(APPL_CXXFLAGS)
+
+include ./Makefile.mbed
 
 #
 #  アプリケーションプログラムに関する定義
 #
 APPLNAME = app
-APPLDIRS += $(SRCDIR)/OBJ ../common ../common/ev3api ../common/ev3api/include 
+APPLDIRS = $(SRCDIR)/OBJ ../common ../common/ev3api ../common/ev3api/include 
 APPLDIRS += ../common/ev3api/src ../../target/$(TARGET) ../../target/$(TARGET)/pil/include
 APPLDIRS += ../../target/$(TARGET)/pil/src
 APPLDIRS += ../../target/$(TARGET)/platform/src
@@ -172,10 +173,12 @@ APPLDIRS += ../../target/$(TARGET)/drivers/common/include
 APPLDIRS += ../../target/$(TARGET)/TLSF-2.4.6/include ../../target/$(TARGET)/TLSF-2.4.6/src
 APPLDIRS += ../../target/$(TARGET)/athrill
 APPLDIRS += ../../../athrill/apl/include
+APPLDIRS += ../../../athrill/apl/src
+APPLDIRS += $(MBED_DIRS)
+
 APPL_CFG = app.cfg
 CDEFS += -DTOPPERS_SUPPORT_PROTECT
 APPL_LIBS =  -nostartfiles  
-
 
 APPL_DIR = $(APPLDIRS) $(SRCDIR)/library
 APPL_ASMOBJS =
@@ -193,8 +196,13 @@ APPL_COBJS += brick_dri.o
 APPL_COBJS += uart_dri.o
 APPL_COBJS += motor_dri.o
 APPL_COBJS += gpio_dri.o
+APPL_COBJS += athrill-libgcc.o
+APPL_COBJS += athrill-syscall.o
+APPL_COBJS += $(MBED_COBJS)
+APPL_CXXOBJS += $(MBED_CXXOBJS)
 
 APPL_CFLAGS := $(APPL_CFLAGS)
+APPL_CFLAGS += $(MBED_CFLAGS)
 ifdef APPLDIRS
 	INCLUDES := $(INCLUDES) $(foreach dir,$(APPLDIRS),-I$(dir))
 endif
@@ -273,7 +281,6 @@ endif
 #  ソースファイルのあるディレクトリに関する定義
 #
 vpath %.c $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
-vpath %.cpp $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
 vpath %.S $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
 vpath %.cfg $(APPL_DIR)
 
@@ -591,7 +598,7 @@ $(APPL_ASMOBJS:.o=.d): %.d: %.S
 
 %.o: %.cpp
 	@echo "*** Default compile rules should not be used."
-	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $<
+	$(CXX) -c $(CFLAGS) $<
 
 %.s: %.cpp
 	@echo "*** Default compile rules should not be used."
