@@ -55,11 +55,11 @@ TARGET = gr_peach_gcc
 #
 SRCLANG = c++
 ifeq ($(SRCLANG),c)
-	LIBS = 
+	LIBS =
 endif
 ifeq ($(SRCLANG),c++)
   USE_CXX = true
-  CXXLIBS =  -lgcc -lstdc++ -lsupc++ -lm -lc -lc -lgcc -lnosys
+  CXXLIBS = -lstdc++ -lsupc++ -lc -lc -lgcc -lm -lnosys
   #CXXLIBS = -lstdc++ -lsupc++ -lm 
   #CXXRTS = cxxrt.o newlibrt.o
 endif
@@ -142,7 +142,7 @@ ifndef OMIT_WARNING_ALL
   COPTS := $(COPTS) -Wall
 endif
 ifndef OMIT_OPTIMIZATION
-  COPTS := $(COPTS) -O0 -gdwarf-2  -mfloat-abi=hard -mfpu=neon -fsigned-char
+  COPTS := $(COPTS) -O0 -gdwarf-2  -mfloat-abi=hard -mfpu=vfpv3 -fsigned-char
 endif
 CDEFS := $(CDEFS) 
 INCLUDES := -I. -I$(SRCDIR)/include -I$(SRCDIR)/arch -I$(SRCDIR) $(INCLUDES)

@@ -57,8 +57,11 @@
  *  セクション情報
  */
 #define DATA_START  __data_start
+#define SDATA_START  __sdata_start
 #define IDATA_START __idata_start
 #define IDATA_END   __idata_end
+#define SIDATA_START __srdata_start
+#define SIDATA_END   __srdata_end
 #define BSS_START   __bss_start
 #define BSS_END     __bss_end
 

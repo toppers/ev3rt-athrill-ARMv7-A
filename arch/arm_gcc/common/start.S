@@ -66,7 +66,7 @@ ALABEL(start)
 	 */
 	ldr  r0, =_kernel_istkpt
 	ldr  sp, [r0]
-	mov  fp, #0        /* ARMモード用フレームポインタ(r11) */         
+	mov  fp, #0        /* ARMモード用フレームポインタ(r11) */
 	mov  r7, #0        /* Thumbモード用フレームポインタ    */
 
 	/*
@@ -115,7 +115,24 @@ ALABEL(start_4)
 	str  r0, [r2],#4
 	cmp  r1, r3
 	blo  start_4
+
+	/*
+	 *  sdataセクションの初期化(ROM化対応)
+	 *  IDATA_START から IDATA_END までを，DATA_START 以降に
+	 *  コピーする
+	 */
+	ldr  r1, =SIDATA_START
+	ldr  r3, =SIDATA_END
+	cmp  r1, r3
+	bhs  start_5
+	ldr  r2, =SDATA_START
+ALABEL(start_4_sdata)
+	ldr  r0, [r1],#4
+	str  r0, [r2],#4
+	cmp  r1, r3
+	blo  start_4_sdata
 #endif /* TOPPERS_OMIT_DATA_INIT */
+
 
 	/*
 	 *  software_init_hook を呼出し（0 でない場合）

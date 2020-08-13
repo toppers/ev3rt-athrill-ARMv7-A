@@ -30,6 +30,8 @@ else
 ifeq ($(ATHRILL_BUILD_TARGET), ubuntu18)
     LDFLAGS += -L $(GCC_PATH)/arm-none-eabi/newlib/hard
     LDFLAGS += -L $(GCC_PATH)/gcc/arm-none-eabi/6.3.1/hard
+    LDFLAGS += -L.
+    LDFLAGS += -Wl,--gc-sections -u _printf_float -u _scanf_float
     #LIBS := $(LIBS) $(GCC_PATH)/arm-none-eabi/newlib/hard/libc.a
     #LIBS += $(GCC_PATH)/gcc/arm-none-eabi/6.3.1/hard/libgcc.a
 else

@@ -1,5 +1,7 @@
+#ifdef MROS_ENABLE
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
+#endif /* MROS_ENABLE */
 #include <string.h>
 #include <stdlib.h>
 #include "athrill_syscall.h"
@@ -17,6 +19,7 @@ unsigned int athrill_device_func_call __attribute__ ((section(".athrill_device_s
 #define OS_DLY_TSK(arg)	dly_tsk(arg)
 //#define OS_DLY_TSK(arg)
 
+#ifdef MROS_ENABLE
 void lwip_socket_init(void)
 {
 	//nothing to do
@@ -321,7 +324,7 @@ char *ipaddr_ntoa_r(const ip_addr_t *addr, char *buf, int buflen)
     //not supported
     return NULL;
 }
-
+#endif /* MROS_ENABLE */
 
 // need to delete following files from lib.a
 // lib_a-exit.o lib_a-__atexit.o lib_a-__call_atexit.o lib_a-fflush.o lib_a-findfp.o lib_a-refill.o

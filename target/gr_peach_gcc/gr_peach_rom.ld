@@ -12,8 +12,10 @@ ENTRY(start);
 MEMORY
 {
   BOOT_LOADER (rx) : ORIGIN = 0x18000000, LENGTH = 0x00004000 
-  FLASH (rx) : ORIGIN = 0x18004000, LENGTH = 0x07FFC000 
-  SRAM (xrw)    : ORIGIN = 0x20000000, LENGTH = 10M
+	INTROM(raxi) :  org = 0x18004000, len = 512k
+	INTDATA(wax) : org = 0x18204000, len = 512k
+    INTRAM (wax)    : org = 0x20000000, LENGTH = 10M
+    INTRAM2 (wax)    : org = 0x20A00000, LENGTH = 10M
 }
 
 
@@ -43,71 +45,115 @@ SECTIONS
         *(.text*)
         *(.glue_7t)
         *(.glue_7)
-    } >FLASH
+    } >INTROM
 
 	.ARM.extab : 
 	{
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
-	} >FLASH
+	} >INTROM
 
 	__exidx_start = .;
 	.ARM.exidx :
 	{
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-	} >FLASH
+	} >INTROM
 	__exidx_end = .;
 
     _etext = .	;
     PROVIDE (etext = .)	;
     .rodata : 
     { 
-       *(.rodata*) 
-       . = ALIGN(4);
-	    __init_array_start = .;
-	    KEEP (*(SORT(.init_array.*)))
-	    KEEP (*(.init_array))
-	    __init_array_end = .;
+        . = ALIGN(4);
+        *(.rodata)
+        *(.rodata.*)
+        *(.data.rel.ro)
+        . = ALIGN(4);
+        __init_array_start = .;
+	*(.ctors)
+        *(SORT(.init_array.*))
+        *(.init_array)
+        __init_array_end = .;
+        _fini_array_start = .;
+        *(SORT(.fini_array.*))
+        *(.fini_array)
+        _fini_array_end = .;
+    } > INTROM
 
-	    . = ALIGN(4);
-	    KEEP(*(.fini))
-	
-	    . = ALIGN(4);
-	    __fini_array_start = .;
-	    KEEP (*(.fini_array))
-	    KEEP (*(SORT(.fini_array.*)))
-	    __fini_array_end = .;
+	_textend = .;
+
+	. = ALIGN(4);
+
+	__idata_start = . ;
+
+	.data	:  AT(__idata_start)
+	{
+		. = ALIGN(4);
+		__data_start = . ;
+        	*(.rosdata)
+		*(.sdata)
+		PROVIDE (__gp = .);
+		*(.data)
+		. = ALIGN(4);
+		_edata	=  . ;
+	} > INTDATA
+
+	__idata_end = __idata_start + SIZEOF(.data);
+	. = ALIGN(4);
+	__srdata_start = . ;
+	.sdata	:  AT(__srdata_start)
+	{
+		. = ALIGN(4);
+		__sdata_start = . ;
+		. = ALIGN(4);
+		_esdata	=  . ;
+	} > INTDATA
+
+	__srdata_end = __srdata_start + SIZEOF(.sdata);
 
 
-	    
-       __rodata_end = . ;
-    } >FLASH
-    __rom_size = . + SIZEOF(.data) - __text;
-    PROVIDE (_rom_size = . + SIZEOF(.data) - __text);
 
-    . = ALIGN(4);
-    .data   :  AT(__rodata_end) 
-    {
-        __data_start = . ;
-        *(.data*)
-    }>SRAM
-    __idata_start = LOADADDR(.data);
-    __idata_end = __idata_start + SIZEOF(.data);
+	__srdata_start = 0x00200000 ;
+	.sdata	:  AT(__srdata_start)
+	{
+		. = ALIGN(4);
+		__sdata_start = . ;
+		PROVIDE (__gp = . + 0x8000);
+		*(.sdata)
+		. = ALIGN(4);
+		_esdata	=  . ;
+	} > INTRAM
 
-    _edata  =  . ;
-    PROVIDE (edata = .);
+	__srdata_end = __srdata_start + SIZEOF(.sdata);
 
-    .bss       :
-    {
-      __bss_start = .	;
-      *(.bss*)
-      *(COMMON)
-   . = ALIGN(32 / 8);
-    }>SRAM
 
-   . = ALIGN(32 / 8);
-     _end = .		;
-    __bss_end = .;
-    PROVIDE (end = .)	;
+	.bss	   :
+	{
+	  . = ALIGN(4);
+	  __bss_start = .;
+	  *(.bss)
+	  *(COMMON)
+	  . = ALIGN(4);
+	  __bss_end = .;
+	} > INTRAM
+
+	.bss_noclr	   :
+	{
+	  . = ALIGN(4);
+	  *(.appheap)
+	  *(COMMON)
+	  . = ALIGN(4);
+	} > INTRAM2
+
+
+	.tdata ALIGN (4) :
+	{
+		PROVIDE (__ep = .);
+		*(.tbyte)
+		*(.tcommon_byte)
+		*(.tdata)
+		*(.tbss)
+		*(.tcommon)
+	} > INTRAM	
     .comment 0 : { *(.comment) }
 
   /* DWARF debug sections.

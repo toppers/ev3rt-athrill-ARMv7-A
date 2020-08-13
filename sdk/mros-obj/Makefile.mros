@@ -27,6 +27,7 @@ MROS_DIRS	+= ./include
 MROS_DIRS	+= $(MROS_MSG_DIR)
 
 MROS_CFLAGS	:= -DMROS_LOG_DISABLE_WARN 
+MROS_CFLAGS	+= -DMROS_ENABLE
 
 MROS_CXXDIRS	+= $(MROS_MSG_DIR)/std_msgs
 MROS_CXXFLAGS	:= -std=gnu++98 -fno-rtti -fpermissive 
