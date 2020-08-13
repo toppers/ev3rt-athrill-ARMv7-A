@@ -9,6 +9,18 @@
 #include "ev3api.h"
 #include "app.h"
 
+#include "ros.h"
+#include "std_msgs/String.h"
+
+#include <stdio.h>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <string.h>
+#include <stdlib.h>
+
+using namespace std;
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,12 +34,14 @@ extern "C" {
  * Right motor: Port D
  */
 const static int gyro_sensor = EV3_PORT_2;
-const static int left_motor = EV3_PORT_A;
-const static int right_motor = EV3_PORT_B;
+const static motor_port_t left_motor = EV3_PORT_A;
+const static motor_port_t right_motor = EV3_PORT_B;
 
 
 void usr_task1(intptr_t unused)
 {
+	syslog(LOG_NOTICE,"========Activate user task1========");
+
     ev3_sensor_config(EV3_PORT_1, COLOR_SENSOR);
 
     // Configure motors
@@ -67,9 +81,34 @@ void usr_task1(intptr_t unused)
     }
     return;
 }
+static char str_buf[1024];
+
+static void topic_publish(ros::Publisher &pub, int value)
+{
+	std_msgs::String str;
+	sprintf(str_buf, "v:%d", value);
+	str.data = string(str_buf);
+	pub.publish(str);
+	return;
+}
 
 void usr_task2(intptr_t unused)
 {
+	syslog(LOG_NOTICE,"========Activate user task2========");
+	int argc = 0;
+	char *argv = NULL;
+	ros::init(argc,argv,"vehicle_sensor");
+	ros::NodeHandle n;
+	ros::Rate loop_rate(10); //100msec
+
+	ros::Publisher pub = n.advertise<std_msgs::String>("sensor", 1);
+
+	while (1) {
+        float sensor_data = ev3_color_sensor_get_reflect(EV3_PORT_1);
+        int sensor_data_100 = (int) (sensor_data * 100.0);
+		topic_publish(pub, sensor_data_100);
+		loop_rate.sleep();
+	}
 	return;
 }
 

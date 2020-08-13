@@ -58,7 +58,7 @@ extern "C" {
 /*
  * max name length of node name
  */
-#define MROS_NODE_NAME_MAXLEN					20U
+#define MROS_NODE_NAME_MAXLEN					50U
 
 
 /*******************************************************

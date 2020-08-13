@@ -1,2 +1,2 @@
--l 28 ./app.cpp
+-l 61 ../../arch/arm_gcc/common/core_support.S
 
