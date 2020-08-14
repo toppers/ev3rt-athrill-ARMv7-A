@@ -12,8 +12,8 @@ ENTRY(start);
 MEMORY
 {
   BOOT_LOADER (rx) : ORIGIN = 0x18000000, LENGTH = 0x00004000 
-	INTROM(raxi) :  org = 0x18004000, len = 512k
-	INTDATA(wax) : org = 0x18204000, len = 512k
+	INTROM(raxi) :  org = 0x18004000, len = 1M
+	INTDATA(wax) : org = 0x18204000, len = 1M
     INTRAM (wax)    : org = 0x20000000, LENGTH = 10M
     INTRAM2 (wax)    : org = 0x20A00000, LENGTH = 10M
 }
@@ -69,7 +69,7 @@ SECTIONS
         *(.data.rel.ro)
         . = ALIGN(4);
         __init_array_start = .;
-	*(.ctors)
+		*(.ctors)
         *(SORT(.init_array.*))
         *(.init_array)
         __init_array_end = .;
@@ -89,10 +89,7 @@ SECTIONS
 	{
 		. = ALIGN(4);
 		__data_start = . ;
-        	*(.rosdata)
-		*(.sdata)
-		PROVIDE (__gp = .);
-		*(.data)
+		*(.data*)
 		. = ALIGN(4);
 		_edata	=  . ;
 	} > INTDATA
@@ -104,7 +101,10 @@ SECTIONS
 	{
 		. = ALIGN(4);
 		__sdata_start = . ;
+        *(.rosdata*)
+		*(.sdata*)
 		. = ALIGN(4);
+		PROVIDE (__gp = . + 0x8000);
 		_esdata	=  . ;
 	} > INTDATA
 
@@ -112,25 +112,13 @@ SECTIONS
 
 
 
-	__srdata_start = 0x00200000 ;
-	.sdata	:  AT(__srdata_start)
-	{
-		. = ALIGN(4);
-		__sdata_start = . ;
-		PROVIDE (__gp = . + 0x8000);
-		*(.sdata)
-		. = ALIGN(4);
-		_esdata	=  . ;
-	} > INTRAM
-
-	__srdata_end = __srdata_start + SIZEOF(.sdata);
 
 
 	.bss	   :
 	{
 	  . = ALIGN(4);
 	  __bss_start = .;
-	  *(.bss)
+	  *(.bss*)
 	  *(COMMON)
 	  . = ALIGN(4);
 	  __bss_end = .;

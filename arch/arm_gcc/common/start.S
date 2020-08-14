@@ -108,7 +108,7 @@ ALABEL(start_3)
 	ldr  r1, =IDATA_START
 	ldr  r3, =IDATA_END
 	cmp  r1, r3
-	bhs  start_5
+	bhs  start_4_sdata_start
 	ldr  r2, =DATA_START
 ALABEL(start_4)
 	ldr  r0, [r1],#4
@@ -116,9 +116,10 @@ ALABEL(start_4)
 	cmp  r1, r3
 	blo  start_4
 
+ALABEL(start_4_sdata_start)
 	/*
 	 *  sdataセクションの初期化(ROM化対応)
-	 *  IDATA_START から IDATA_END までを，DATA_START 以降に
+	 *  SIDATA_START から SIDATA_END までを，SDATA_START 以降に
 	 *  コピーする
 	 */
 	ldr  r1, =SIDATA_START

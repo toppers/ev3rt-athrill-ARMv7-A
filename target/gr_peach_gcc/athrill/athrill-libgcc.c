@@ -328,10 +328,11 @@ char *ipaddr_ntoa_r(const ip_addr_t *addr, char *buf, int buflen)
 
 // need to delete following files from lib.a
 // lib_a-exit.o lib_a-__atexit.o lib_a-__call_atexit.o lib_a-fflush.o lib_a-findfp.o lib_a-refill.o
+#if 0
 void exit(int status)
 {
 }
-
+#endif
 void __register_exitproc(void)
 {
 

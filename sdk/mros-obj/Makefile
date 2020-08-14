@@ -59,7 +59,8 @@ ifeq ($(SRCLANG),c)
 endif
 ifeq ($(SRCLANG),c++)
   USE_CXX = true
-  CXXLIBS = -lstdc++ -lsupc++ -lc -lc -lgcc -lm -lnosys
+  #CXXLIBS = -lstdc++ -lsupc++ -lc -lc -lgcc -lm -lnosys
+  CXXLIBS = -lstdc++ -lsupc++ -lm -lc -lc -lgcc -lnosys
   #CXXLIBS = -lstdc++ -lsupc++ -lm 
   #CXXRTS = cxxrt.o newlibrt.o
 endif

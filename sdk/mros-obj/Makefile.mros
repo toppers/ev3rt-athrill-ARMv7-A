@@ -32,7 +32,8 @@ MROS_CFLAGS	+= -DMROS_ENABLE
 MROS_CXXDIRS	+= $(MROS_MSG_DIR)/std_msgs
 MROS_CXXFLAGS	:= -std=gnu++98 -fno-rtti -fpermissive 
 MROS_CXXFLAGS	+= -fno-common -fmessage-length=0  -mno-unaligned-access 
-MROS_CXXFLAGS	+=  -Wl,--gc-sections -nostartfiles --specs=nano.specs -u _printf_float -u _scanf_float
+#MROS_CXXFLAGS	+=  -Wl,--gc-sections -nostartfiles --specs=nano.specs -u _printf_float -u _scanf_float
+MROS_CXXFLAGS	+=  -Wl,--gc-sections -nostartfiles -u _printf_float -u _scanf_float
 MROS_CXXFLAGS	+=  -Wl,--no-wchar-size-warning
 MROS_CXXOBJS := ros.o
 
