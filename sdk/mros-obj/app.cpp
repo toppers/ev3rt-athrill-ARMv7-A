@@ -25,6 +25,12 @@ using namespace std;
 #ifdef __cplusplus
 extern "C" {
 #endif
+//dark
+//#define white 78
+//#define black 20
+//bright
+#define white 100
+#define black 50
 
 /**
  * Define the connection ports of the gyro sensor and motors.
@@ -37,9 +43,36 @@ const static int gyro_sensor = EV3_PORT_2;
 const static motor_port_t left_motor = EV3_PORT_A;
 const static motor_port_t right_motor = EV3_PORT_B;
 
+typedef enum {
+	ROBO_CONTROL_STOP = 0,
+	ROBO_CONTROL_START,
+} RoboControlType;
+
+static RoboControlType robo_control = ROBO_CONTROL_STOP;
+static void ctrl_callback(std_msgs::String *msg)
+{
+	int ctrl;
+	syslog(LOG_NOTICE,"ctrl_callback():%s", msg->data.c_str());
+	sscanf(msg->data.c_str(), "v:%d", &ctrl);
+	if (ctrl > 0) {
+		robo_control = ROBO_CONTROL_START;
+	}
+	else {
+		robo_control = ROBO_CONTROL_STOP;
+	}
+	return;
+}
 
 void usr_task1(intptr_t unused)
 {
+	int argc = 0;
+	char *argv = NULL;
+	ros::init(argc,argv,"robo_controller");
+	ros::NodeHandle n;
+	ros::Subscriber sub;
+
+	sub = n.subscribe("robo_ctrl",1, ctrl_callback);
+
 	syslog(LOG_NOTICE,"========Activate user task1========");
 
     ev3_sensor_config(EV3_PORT_1, COLOR_SENSOR);
@@ -48,36 +81,25 @@ void usr_task1(intptr_t unused)
     ev3_motor_config(left_motor, LARGE_MOTOR);
     ev3_motor_config(right_motor, LARGE_MOTOR);
 
-#if 0
-    LogDataType log_data;
-    int i = 0;
-#endif
     syslog(LOG_NOTICE, "#### motor control start");
     while(1) {
-
-    /**
-     * PID controller
-     */
-
-//dark
-//#define white 78
-//#define black 20
-//bright
-#define white 100
-#define black 50
+        tslp_tsk(20); /* 20msec */
+    	if (robo_control == ROBO_CONTROL_STOP) {
+    		ev3_motor_steer(left_motor, right_motor, 0, 0);
+    		continue;
+    	}
+		/**
+		 * PID controller
+		 */
         static float lasterror = 0, integral = 0;
         static float midpoint = (white - black) / 2 + black;
         {
             float error = midpoint - ev3_color_sensor_get_reflect(EV3_PORT_1);
-            //integral = error + integral * 0.5;
-            //float steer = 0.07 * error + 0.3 * integral + 1 * (error - lasterror);
             integral = error + integral * 0.3;
             float steer = 0.6 * error + 0.3 * integral + 1 * (error - lasterror);
             ev3_motor_steer(left_motor, right_motor, 10, steer);
             lasterror = error;
         }
-        tslp_tsk(20); /* 100msec */
-
     }
     return;
 }
@@ -97,11 +119,12 @@ void usr_task2(intptr_t unused)
 	syslog(LOG_NOTICE,"========Activate user task2========");
 	int argc = 0;
 	char *argv = NULL;
-	ros::init(argc,argv,"vehicle_sensor");
+
+	ros::init(argc,argv,"robo_sensor");
 	ros::NodeHandle n;
 	ros::Rate loop_rate(10); //100msec
 
-	ros::Publisher pub = n.advertise<std_msgs::String>("sensor", 1);
+	ros::Publisher pub = n.advertise<std_msgs::String>("robo_sensor", 1);
 
 	while (1) {
         float sensor_data = ev3_color_sensor_get_reflect(EV3_PORT_1);
