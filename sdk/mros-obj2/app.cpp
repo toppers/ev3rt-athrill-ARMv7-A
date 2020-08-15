@@ -69,14 +69,14 @@ void usr_task1(intptr_t unused)
         tslp_tsk(100); /* 100msec */
         if (clossing_control == CLOSSING_UP) {
             ev3_motor_set_power(arm_motor, -10);
-            if (counter > 25) {
+            if (counter > 200) {
             	counter = 0;
             	clossing_control = CLOSSING_DOWN;
             }
         }
         else {
             ev3_motor_set_power(arm_motor, 10);
-            if (counter > 25) {
+            if (counter > 200) {
             	counter = 0;
             	clossing_control = CLOSSING_UP;
             }
