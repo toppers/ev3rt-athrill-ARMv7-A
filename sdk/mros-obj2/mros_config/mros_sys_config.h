@@ -30,7 +30,7 @@ extern "C" {
 /*
  * ipaddr of self node
  */
-#define MROS_NODE_IPADDR						"192.168.11.58"
+#define MROS_NODE_IPADDR						"192.168.11.57"
 
 /*
  * subnet mask of self node
