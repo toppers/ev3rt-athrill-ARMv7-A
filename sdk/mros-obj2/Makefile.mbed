@@ -1,0 +1,41 @@
+MBED_ROOTDIR	:= ../../../asp-athrill-mbed
+
+MBED_CFLAGS	:= -DTARGET_FF_ARDUINO 
+MBED_CFLAGS     += -DTOOLCHAIN_GCC_ARM 
+MBED_CFLAGS     += -DTOOLCHAIN_GCC 
+MBED_CFLAGS     += -DTARGET_CORTEX_A 
+MBED_CFLAGS     += -DMBED_BUILD_TIMESTAMP=1458722901.8 
+MBED_CFLAGS     += -D__MBED__=1 
+MBED_CFLAGS     += -DTARGET_RENESAS 
+MBED_CFLAGS     += -DTARGET_LIKE_MBED 
+MBED_CFLAGS     += -D__MBED_CMSIS_RTOS_CA9
+MBED_CFLAGS     += -D__EVAL 
+MBED_CFLAGS     += -D__FPU_PRESENT 
+MBED_CFLAGS     += -DTARGET_LIKE_CORTEX_A9 
+MBED_CFLAGS     += -D__CMSIS_RTOS 
+MBED_CFLAGS     += -DTARGET_A9 
+MBED_CFLAGS     += -D__CORTEX_A9 
+MBED_CFLAGS     += -DARM_MATH_CA9  
+MBED_CFLAGS     += -D_DEBUG_HTTP_SERVER_H 
+MBED_CFLAGS     += -DLWIP_DEBUG 
+MBED_CFLAGS     += -DGRPEACH 
+MBED_CFLAGS     += -DWOLFSSL_USER_SETTINGS 
+MBED_CFLAGS     += -DWOLFSSL_LIB
+MBED_CFLAGS     += -DLWIP_TRANSPORT_ETHERNET
+MBED_CFLAGS     += -DTARGET_ATHRILL
+
+MBED_DIRS	:= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface/lwip-athrill
+MBED_DIRS	+= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface/lwip-athrill/include
+MBED_DIRS	+= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface
+MBED_DIRS	+= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface/lwip-sys
+MBED_DIRS	+= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface/Socket
+MBED_DIRS	+= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface/lwip
+MBED_DIRS	+= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface/lwip/include
+MBED_DIRS	+= $(MBED_ROOTDIR)/mbed-lib/EthernetInterface/lwip/include/ipv4
+
+MBED_COBJS	:=
+MBED_CXXBJS	:= EthernetInterface.o
+MBED_CXXBJS	+= Endpoint.o
+MBED_CXXBJS	+= Socket.o
+MBED_CXXBJS	+= TCPSocketConnection.o
+MBED_CXXBJS	+= TCPSocketServer.o

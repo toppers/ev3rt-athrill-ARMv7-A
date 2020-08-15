@@ -29,8 +29,8 @@ extern "C" {
 //#define white 78
 //#define black 20
 //bright
-#define white 100
-#define black 50
+#define white 80
+#define black 20
 
 /**
  * Define the connection ports of the gyro sensor and motors.
@@ -48,7 +48,7 @@ typedef enum {
 	ROBO_CONTROL_START,
 } RoboControlType;
 
-static RoboControlType robo_control = ROBO_CONTROL_STOP;
+static RoboControlType robo_control = ROBO_CONTROL_START;
 static void ctrl_callback(std_msgs::String *msg)
 {
 	int ctrl;
@@ -62,6 +62,7 @@ static void ctrl_callback(std_msgs::String *msg)
 	}
 	return;
 }
+static colorid_t color_id;
 
 void usr_task1(intptr_t unused)
 {
@@ -83,11 +84,16 @@ void usr_task1(intptr_t unused)
 
     syslog(LOG_NOTICE, "#### motor control start");
     while(1) {
-        tslp_tsk(20); /* 20msec */
+        tslp_tsk(10); /* 10msec */
     	if (robo_control == ROBO_CONTROL_STOP) {
     		ev3_motor_steer(left_motor, right_motor, 0, 0);
     		continue;
     	}
+		color_id = ev3_color_sensor_get_color(EV3_PORT_1);
+		if (color_id == COLOR_RED) {
+    		ev3_motor_steer(left_motor, right_motor, 3, 0);
+    		continue;
+		}
 		/**
 		 * PID controller
 		 */
@@ -96,7 +102,7 @@ void usr_task1(intptr_t unused)
         {
             float error = midpoint - ev3_color_sensor_get_reflect(EV3_PORT_1);
             integral = error + integral * 0.3;
-            float steer = 0.6 * error + 0.3 * integral + 1 * (error - lasterror);
+            float steer = 2.8 * error + 0.2 * integral + 1 * (error - lasterror);
             ev3_motor_steer(left_motor, right_motor, 10, steer);
             lasterror = error;
         }
@@ -124,12 +130,16 @@ void usr_task2(intptr_t unused)
 	ros::NodeHandle n;
 	ros::Rate loop_rate(10); //100msec
 
-	ros::Publisher pub = n.advertise<std_msgs::String>("robo_sensor", 1);
+	ros::Publisher pub1 = n.advertise<std_msgs::String>("robo_sensor", 1);
+	ros::Publisher pub2 = n.advertise<std_msgs::String>("robo_color", 1);
 
 	while (1) {
         float sensor_data = ev3_color_sensor_get_reflect(EV3_PORT_1);
         int sensor_data_100 = (int) (sensor_data * 100.0);
-		topic_publish(pub, sensor_data_100);
+		topic_publish(pub1, sensor_data_100);
+
+		topic_publish(pub2, color_id);
+
 		loop_rate.sleep();
 	}
 	return;
