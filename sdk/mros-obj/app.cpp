@@ -48,21 +48,21 @@ typedef enum {
 	ROBO_CONTROL_START,
 } RoboControlType;
 
+static colorid_t color_id;
 static RoboControlType robo_control = ROBO_CONTROL_START;
-static void ctrl_callback(std_msgs::String *msg)
+static void crossing_alarm_callback(std_msgs::String *msg)
 {
 	int ctrl;
-	syslog(LOG_NOTICE,"ctrl_callback():%s", msg->data.c_str());
+	syslog(LOG_NOTICE,"crossing_alarm_callback():%s", msg->data.c_str());
 	sscanf(msg->data.c_str(), "v:%d", &ctrl);
-	if (ctrl > 0) {
-		robo_control = ROBO_CONTROL_START;
-	}
-	else {
+	if ((color_id == COLOR_RED) && (ctrl > 0)) { /* DOWN */
 		robo_control = ROBO_CONTROL_STOP;
+	}
+	else { /* UP */
+		robo_control = ROBO_CONTROL_START;
 	}
 	return;
 }
-static colorid_t color_id;
 
 void usr_task1(intptr_t unused)
 {
@@ -72,7 +72,7 @@ void usr_task1(intptr_t unused)
 	ros::NodeHandle n;
 	ros::Subscriber sub;
 
-	sub = n.subscribe("robo_ctrl",1, ctrl_callback);
+	sub = n.subscribe("crossing_alarm",1, crossing_alarm_callback);
 
 	syslog(LOG_NOTICE,"========Activate user task1========");
 
