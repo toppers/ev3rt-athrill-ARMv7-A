@@ -49,7 +49,14 @@ typedef enum {
 	CLOSSING_DOWN,
 } ClossingControlType;
 
-static ClossingControlType clossing_control;
+static ClossingControlType clossing_control = CLOSSING_DOWN;
+
+static void ctrl_callback(std_msgs::String *msg)
+{
+	syslog(LOG_NOTICE,"ctrl_callback():%s", msg->data.c_str());
+	return;
+}
+
 
 void usr_task1(intptr_t unused)
 {
@@ -58,6 +65,9 @@ void usr_task1(intptr_t unused)
 	int counter = 0;
 	ros::init(argc,argv,"clossing_controller");
 	ros::NodeHandle n;
+	ros::Subscriber sub;
+
+	//sub = n.subscribe("robo_color",1, ctrl_callback);
 
 	syslog(LOG_NOTICE,"========Activate user task1========");
 
@@ -68,16 +78,18 @@ void usr_task1(intptr_t unused)
     while(1) {
         tslp_tsk(100); /* 100msec */
         if (clossing_control == CLOSSING_UP) {
-            ev3_motor_set_power(arm_motor, -10);
-            if (counter > 200) {
+            ev3_motor_set_power(arm_motor, 10);
+            if (counter > 50) {
+            	syslog(LOG_NOTICE, "DOWN");
             	counter = 0;
             	clossing_control = CLOSSING_DOWN;
             }
         }
         else {
-            ev3_motor_set_power(arm_motor, 10);
-            if (counter > 200) {
+            ev3_motor_set_power(arm_motor, -10);
+            if (counter > 50) {
             	counter = 0;
+            	syslog(LOG_NOTICE, "UP");
             	clossing_control = CLOSSING_UP;
             }
         }

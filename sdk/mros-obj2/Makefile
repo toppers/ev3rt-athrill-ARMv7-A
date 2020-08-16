@@ -383,7 +383,7 @@ $(OBJFILE): $(APPL_CFG) kernel_cfg.timestamp $(ALL_OBJS) $(LIBS_DEP)
 	$(CFG) --pass 3 --kernel asp $(INCLUDES) \
 				--rom-image $(OBJNAME).srec --symbol-table $(OBJNAME).syms \
 				-T $(TARGETDIR)/target_check.tf $(CFG_TABS) $<
-	cp $(OBJFILE) ../$(OBJFILE)
+	cp $(OBJFILE) ../$(OBJFILE)_crossing
 
 #
 #  バイナリファイルの生成
