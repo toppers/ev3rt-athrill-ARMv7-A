@@ -360,7 +360,8 @@ void main_task(intptr_t unused) {
             //float steer = 0.07 * error + 0.3 * integral + 1 * (error - lasterror);
             integral = error + integral * 0.3;
             float steer = 0.6 * error + 0.3 * integral + 1 * (error - lasterror);
-            ev3_motor_steer(left_motor, right_motor, 10, steer);
+            //ev3_motor_steer(left_motor, right_motor, 10, steer);
+            ev3_motor_set_power(left_motor, -1);
             lasterror = error;
         }
         tslp_tsk(20); /* 100msec */

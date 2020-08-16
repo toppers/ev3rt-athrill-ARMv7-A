@@ -67,7 +67,7 @@ void usr_task1(intptr_t unused)
 	ros::NodeHandle n;
 	ros::Subscriber sub;
 
-	//sub = n.subscribe("robo_color",1, ctrl_callback);
+	sub = n.subscribe("robo_color",1, ctrl_callback);
 
 	syslog(LOG_NOTICE,"========Activate user task1========");
 
