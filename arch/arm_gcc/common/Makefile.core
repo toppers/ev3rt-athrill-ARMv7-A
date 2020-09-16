@@ -34,10 +34,16 @@ ifeq ($(ATHRILL_BUILD_TARGET), ubuntu18)
     #LIBS := $(LIBS) $(GCC_PATH)/arm-none-eabi/newlib/hard/libc.a
     #LIBS += $(GCC_PATH)/gcc/arm-none-eabi/6.3.1/hard/libgcc.a
 else
+ifeq ($(ATHRILL_BUILD_TARGET), ubuntu20)
+    LDFLAGS += -L $(GCC_PATH)/arm-none-eabi/newlib/arm/v5te/hard
+    LDFLAGS += -L $(GCC_PATH)/gcc/arm-none-eabi/9.2.1/arm/v5te/hard
+    LDFLAGS += -Wl,--gc-sections -u _printf_float -u _scanf_float
+else
     LDFLAGS += -L $(GCC_PATH)/arm-none-eabi/newlib/fpu
     LDFLAGS += -L $(GCC_PATH)/gcc/arm-none-eabi/.9.3/fpu
     LIBS := $(LIBS) $(GCC_PATH)/arm-none-eabi/newlib/fpu/libc.a
     LIBS += $(GCC_PATH)/gcc/arm-none-eabi/4.9.3/fpu/libgcc.a
+endif
 endif
 endif
 

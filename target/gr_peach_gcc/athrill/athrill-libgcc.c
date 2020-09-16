@@ -347,6 +347,9 @@ void __sync_synchronize(void)
 // index is fd for out. if the value is 0, it means the fd is normal file
 
 
+#ifndef _PARAMS
+#define _PARAMS(args) args
+#endif
 
 int _close_r _PARAMS ((struct _reent *unused, int fd))
 {
